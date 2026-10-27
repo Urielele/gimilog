@@ -1,15 +1,16 @@
 import "server-only";
 import { rawg } from "@/lib/rawg/client";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { mapRawgGame } from "@/lib/rawg/mappers";
+import { mapRawgDetail, mapRawgSearchResult } from "@/lib/rawg/mappers";
+import type { RawgGame } from "@/lib/rawg/types";
 
 // Simpan hasil pencarian ke database (tanpa deskripsi lengkap)
-export async function upsertSearchResults(results: any[]) {
+export async function upsertSearchResults(results: RawgGame[]) {
   if (!results.length) return;
-  const rows = results.map(mapRawgGame);
+  const rows = results.map(mapRawgSearchResult);
   const { error } = await supabaseAdmin
     .from("games")
-    .upsert(rows, { onConflict: "rawg_id", ignoreDuplicates: false });
+    .upsert(rows, { onConflict: "rawg_id" });
   if (error) throw error;
 }
 
@@ -21,15 +22,13 @@ export async function getGameBySlug(slug: string) {
     .eq("slug", slug)
     .maybeSingle();
 
-  // Jika ada dan sudah punya summary, langsung pakai
-  if (cached?.summary) return cached;
+  // summary null = detail belum pernah diambil. "" = sudah, tapi memang kosong.
+  if (cached && cached.summary !== null) return cached;
 
-  // Kalau belum, ambil detail dari RAWG lalu simpan
-  const detail = await rawg(`/games/${slug}`);
-  const row = mapRawgGame(detail);
+  const detail = (await rawg(`/games/${slug}`)) as RawgGame;
   const { data, error } = await supabaseAdmin
     .from("games")
-    .upsert(row, { onConflict: "rawg_id" })
+    .upsert(mapRawgDetail(detail), { onConflict: "rawg_id" })
     .select()
     .single();
   if (error) throw error;

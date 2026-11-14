@@ -1,16 +1,8 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
 import { Providers } from "./providers";
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/Navbar";
 import "./globals.css";
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  variable: "--font-poppins",
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Gimilog — Game Reviews & Backlog",
@@ -20,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={poppins.variable}>
+    <html lang="en">
       <body>
         <Providers>
           <Navbar />

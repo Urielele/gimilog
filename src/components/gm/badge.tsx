@@ -9,7 +9,6 @@ export const badgeStyles = cva(
     variants: {
       tone: {
         neutral: "bg-surface text-muted",
-        primary: "bg-primary-tint text-primary-text",
         secondary: "bg-wishlist-tint text-wishlist",
         tertiary: "bg-info-tint text-info",
         accent: "bg-rating-tint text-rating-text",

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Gamepad2, Search, SearchX } from "lucide-react";
+import { ArrowRight, Gamepad2, Search, SearchX, Sparkles } from "lucide-react";
 import { useGameSearch } from "@/features/games/hooks/useGameSearch";
 
 /* DESIGN2 tokens
@@ -124,6 +124,15 @@ export default function SearchPage() {
           <p className="mt-3 text-[0.875rem]" style={{ color: MUTED }}>
             Results update automatically after you stop typing.
           </p>
+
+          <Link
+            href="/rekomendasi"
+            className="mt-3 inline-flex items-center gap-2 rounded-full border bg-white px-4 py-2 text-[0.875rem] font-medium transition-colors duration-200 hover:border-[#FF6B00] hover:text-[#FF6B00]"
+            style={{ borderColor: BORDER, color: "#7C3AED" }}
+          >
+            <Sparkles className="size-4" />
+            Not sure what to play? Get a recommendation
+          </Link>
         </div>
 
         <section className="mt-16" aria-live="polite">

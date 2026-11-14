@@ -8,6 +8,9 @@ export default function SettingsPage() {
   const [language, setLang] = useState<Language>("en");
 
   useEffect(() => {
+    // Preferensi dibaca dari localStorage setelah mount agar tidak terjadi
+    // hydration mismatch antara HTML server (default "en") dan browser.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLang(getLanguage());
   }, []);
 

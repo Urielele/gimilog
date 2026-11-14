@@ -16,11 +16,13 @@ export async function upsertSearchResults(results: RawgGame[]) {
 
 // Ambil detail lengkap satu game (cache-first)
 export async function getGameBySlug(slug: string) {
-  const { data: cached } = await supabaseAdmin
+  const { data: cached, error: readError } = await supabaseAdmin
     .from("games")
     .select("*")
     .eq("slug", slug)
     .maybeSingle();
+
+  if (readError) throw readError;
 
   // summary null = detail belum pernah diambil. "" = sudah, tapi memang kosong.
   if (cached && cached.summary !== null) return cached;

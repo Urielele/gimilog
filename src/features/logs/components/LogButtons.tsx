@@ -5,8 +5,7 @@ import { useState } from "react";
 import { Bookmark, CheckCircle2, Gamepad2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
-
-const INK = "#171525";
+import { Button } from "@/components/gm";
 
 const STATUSES = [
   { value: "wishlist", label: "Wishlist", icon: Bookmark },
@@ -74,32 +73,26 @@ export function LogButtons({
           const busy = pending === status.value;
 
           return (
-            <button
+            <Button
               key={status.value}
-              type="button"
+              variant={active ? "primary" : "secondary"}
               onClick={() => setStatus(status.value)}
               disabled={pending !== null}
               aria-pressed={active}
-              className={
-                active
-                  ? "inline-flex h-10 items-center gap-2 rounded-[12px] bg-[#FF6B00] px-4 text-[0.875rem] font-semibold text-white transition-all duration-200 hover:bg-[#E66000] disabled:pointer-events-none disabled:opacity-60"
-                  : "inline-flex h-10 items-center gap-2 rounded-[12px] border bg-white px-4 text-[0.875rem] font-semibold transition-colors duration-200 hover:border-[#FF6B00] hover:text-[#FF6B00] disabled:pointer-events-none disabled:opacity-60"
-              }
-              style={active ? undefined : { borderColor: "#E2E8F0", color: INK }}
             >
               {busy ? (
-                <Loader2 className="size-4 animate-spin" />
+                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
               ) : (
-                <Icon className="size-4" />
+                <Icon aria-hidden="true" />
               )}
               {status.label}
-            </button>
+            </Button>
           );
         })}
       </div>
 
       {current && (
-        <p className="mt-2 text-[0.75rem]" style={{ color: "#64748B" }}>
+        <p className="mt-2 text-xs text-muted">
           Click the active status again to remove it from your backlog.
         </p>
       )}

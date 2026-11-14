@@ -1,26 +1,18 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ArrowLeft,
-  CalendarDays,
-  Gamepad2,
-  MessageSquare,
-  Star,
-} from "lucide-react";
+import { ArrowLeft, Gamepad2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getGameBySlug } from "@/features/games/services/games.service";
 import { ReviewForm } from "@/features/reviews/components/ReviewForm";
 import { LogButtons } from "@/features/logs/components/LogButtons";
-
-/* DESIGN2 tokens
-   primary #FF6B00 · secondary #7C3AED · tertiary #2563EB
-   surface #F8FAFC · accent #FFC107 · neutral #FFFFFF
-   radius: sm 12px · md 24px · lg 36px                                  */
-
-const INK = "#171525";
-const MUTED = "#64748B";
-const BORDER = "rgba(23, 21, 37, 0.08)";
-const CARD_SHADOW = "0 2px 12px rgba(0, 0, 0, 0.06)";
+import {
+  Card,
+  Container,
+  PageShell,
+  RatingValue,
+  SectionHeading,
+  SquareAvatar,
+  TextLink,
+} from "@/components/gm";
 
 type ReviewRow = {
   id: number;
@@ -122,129 +114,75 @@ export default async function GamePage({
   const summary = game.summary?.trim();
 
   return (
-    <main className="min-h-[100dvh] bg-[#F8FAFC]" style={{ color: INK }}>
-      <div className="mx-auto w-full max-w-[1100px] px-6 py-12 md:py-20">
-        <Link
+    <PageShell>
+      <Container className="py-12">
+        <TextLink
           href="/search"
-          className="inline-flex items-center gap-2 rounded-full border bg-white px-4 py-2 text-[0.875rem] font-medium transition-colors duration-200 hover:border-[#FF6B00] hover:text-[#FF6B00]"
-          style={{ borderColor: BORDER, color: MUTED }}
+          className="inline-flex h-11 items-center gap-1"
         >
-          <ArrowLeft className="size-4" />
+          <ArrowLeft className="size-4" aria-hidden="true" />
           Back to search
-        </Link>
+        </TextLink>
 
-        <div className="mt-8 grid gap-8 md:grid-cols-[260px_1fr] lg:grid-cols-[300px_1fr] lg:gap-12">
-          <div>
+        <div className="mt-8 grid gap-8 md:grid-cols-[240px_1fr] lg:gap-12">
+          <div className="max-w-60 md:max-w-none">
             {game.cover_url ? (
               <img
                 src={game.cover_url}
                 alt={`Cover ${game.title}`}
-                className="aspect-[3/4] w-full rounded-[24px] border object-cover"
-                style={{ borderColor: BORDER, boxShadow: CARD_SHADOW }}
+                className="aspect-[3/4] w-full border border-hairline-soft object-cover"
               />
             ) : (
-              <div
-                className="flex aspect-[3/4] w-full items-center justify-center rounded-[24px] border"
-                style={{
-                  borderColor: BORDER,
-                  background: "linear-gradient(135deg, #FFE9D6, #EDE4FE)",
-                  boxShadow: CARD_SHADOW,
-                }}
-              >
-                <Gamepad2 className="size-12" style={{ color: "#FF6B00" }} />
+              <div className="flex aspect-[3/4] w-full items-center justify-center border border-hairline-soft bg-surface-raised">
+                <Gamepad2
+                  className="size-10 text-muted"
+                  aria-hidden="true"
+                />
               </div>
             )}
           </div>
 
           <div>
-            <span
-              className="inline-flex items-center gap-2 rounded-full border bg-white px-3 py-1.5 text-[0.75rem] font-medium tracking-[0.02em]"
-              style={{ borderColor: BORDER, color: "#7C3AED" }}
-            >
-              <Gamepad2 className="size-3.5" />
-              Game Details
-            </span>
-
-            <h1 className="mt-4 text-[clamp(2rem,4.5vw,3.25rem)] font-bold leading-[1.1] tracking-[-0.02em]">
+            <h1 className="text-display font-semibold text-ink">
               {game.title}
             </h1>
 
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              {releaseDate && (
-                <span
-                  className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[0.8125rem] font-medium"
-                  style={{
-                    backgroundColor: "rgba(37, 99, 235, 0.10)",
-                    color: "#2563EB",
-                  }}
-                >
-                  <CalendarDays className="size-3.5" />
-                  {releaseDate}
-                </span>
-              )}
+            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted">
+              {releaseDate && <span>Released {releaseDate}</span>}
 
               {avgRating !== null ? (
-                <span
-                  className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[0.8125rem] font-semibold"
-                  style={{
-                    backgroundColor: "rgba(255, 193, 7, 0.18)",
-                    color: "#92400E",
-                  }}
-                >
-                  <Star
-                    className="size-3.5"
-                    style={{ fill: "#F59E0B", color: "#F59E0B" }}
-                  />
-                  {avgRating.toFixed(1)}
-                  <span className="font-normal">
+                <span className="inline-flex items-center gap-2">
+                  <RatingValue value={avgRating.toFixed(1)} />
+                  <span>
                     ({ratingCount} review{ratingCount === 1 ? "" : "s"})
                   </span>
                 </span>
               ) : (
-                <span
-                  className="inline-flex items-center rounded-full px-3 py-1.5 text-[0.8125rem] font-medium"
-                  style={{
-                    backgroundColor: "rgba(23, 21, 37, 0.05)",
-                    color: MUTED,
-                  }}
-                >
-                  No reviews yet
-                </span>
+                <span>No ratings yet</span>
               )}
             </div>
 
-            <section
-              className="mt-8 rounded-[24px] border bg-white p-6 md:p-8"
-              style={{ borderColor: BORDER, boxShadow: CARD_SHADOW }}
-            >
-              <h2 className="text-[1.25rem] font-semibold tracking-[-0.01em]">
-                About this game
-              </h2>
+            <Card className="mt-8 p-6">
+              <SectionHeading>About this game</SectionHeading>
 
               {summary ? (
-                <p
-                  className="mt-3 whitespace-pre-line text-[1rem] leading-[1.7]"
-                  style={{ color: MUTED }}
-                >
+                <p className="mt-2 whitespace-pre-line text-base leading-[1.5] text-muted">
                   {summary}
                 </p>
               ) : (
-                <p
-                  className="mt-3 text-[1rem] leading-[1.7]"
-                  style={{ color: MUTED }}
-                >
+                <p className="mt-2 text-base leading-[1.5] text-muted">
                   No description available for this game.
                 </p>
               )}
-            </section>
+            </Card>
 
-            <p className="mt-6 text-[0.8125rem]" style={{ color: MUTED }}>
+            <p className="mt-4 text-xs text-muted">
               Game data provided by{" "}
               <a
                 href="https://rawg.io"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium underline underline-offset-2 transition-colors duration-200 hover:text-[#FF6B00]"
+                className="text-xs text-primary-text underline underline-offset-4 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 RAWG
               </a>
@@ -253,17 +191,9 @@ export default async function GamePage({
           </div>
         </div>
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-          <section
-            className="rounded-[24px] border bg-white p-6 md:p-7"
-            style={{ borderColor: BORDER, boxShadow: CARD_SHADOW }}
-          >
-            <h2 className="text-[1.25rem] font-semibold tracking-[-0.01em]">
-              Your backlog
-            </h2>
-            <p className="mt-1 text-[0.875rem]" style={{ color: MUTED }}>
-              Mark where you are with this game.
-            </p>
+        <div className="mt-8 flex flex-col gap-4">
+          <Card className="p-6">
+            <SectionHeading>Your backlog</SectionHeading>
 
             {user ? (
               <div className="mt-4">
@@ -273,82 +203,34 @@ export default async function GamePage({
                 />
               </div>
             ) : (
-              <p
-                className="mt-4 rounded-[12px] border px-4 py-3 text-[0.875rem] leading-[1.6]"
-                style={{
-                  borderColor: BORDER,
-                  backgroundColor: "#F8FAFC",
-                  color: MUTED,
-                }}
-              >
-                <Link
-                  href="/login"
-                  className="font-semibold text-[#FF6B00] underline-offset-4 hover:underline"
-                >
-                  Sign in
-                </Link>{" "}
-                to add this game to your backlog.
+              <p className="mt-2 text-base leading-[1.5] text-muted">
+                <TextLink href="/login">Sign in</TextLink> to add this game to
+                your backlog.
               </p>
             )}
-          </section>
+          </Card>
 
-          <section
-            className="rounded-[24px] border bg-white p-6 md:p-7"
-            style={{ borderColor: BORDER, boxShadow: CARD_SHADOW }}
-          >
-            <h2 className="text-[1.25rem] font-semibold tracking-[-0.01em]">
-              Your review
-            </h2>
-            <p className="mt-1 text-[0.875rem]" style={{ color: MUTED }}>
-              Rate it and share what you thought.
-            </p>
+          <Card className="p-6" id="your-review">
+            <SectionHeading>Your review</SectionHeading>
 
             {user ? (
               <div className="mt-4">
                 <ReviewForm gameId={game.id} initial={myReview} />
               </div>
             ) : (
-              <p
-                className="mt-4 rounded-[12px] border px-4 py-3 text-[0.875rem] leading-[1.6]"
-                style={{
-                  borderColor: BORDER,
-                  backgroundColor: "#F8FAFC",
-                  color: MUTED,
-                }}
-              >
-                <Link
-                  href="/login"
-                  className="font-semibold text-[#FF6B00] underline-offset-4 hover:underline"
-                >
-                  Sign in
-                </Link>{" "}
-                to rate and review this game.
+              <p className="mt-2 text-base leading-[1.5] text-muted">
+                <TextLink href="/login">Sign in</TextLink> to rate and review
+                this game.
               </p>
             )}
-          </section>
+          </Card>
         </div>
 
-        <section
-          className="mt-6 rounded-[24px] border bg-white p-6 md:p-8"
-          style={{ borderColor: BORDER, boxShadow: CARD_SHADOW }}
-        >
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-[1.25rem] font-semibold tracking-[-0.01em]">
-              All reviews
-            </h2>
-            <span
-              className="rounded-full px-3 py-1 text-[0.75rem] font-medium"
-              style={{
-                backgroundColor: "rgba(124, 58, 237, 0.10)",
-                color: "#7C3AED",
-              }}
-            >
-              {ratingCount} {ratingCount === 1 ? "review" : "reviews"}
-            </span>
-          </div>
+        <Card className="mt-4 p-6">
+          <SectionHeading>All reviews</SectionHeading>
 
           {reviewRows.length ? (
-            <ul className="mt-5 flex flex-col gap-3">
+            <ul className="mt-4 flex flex-col gap-2">
               {reviewRows.map((review) => {
                 const username = getUsername(review.profiles);
                 const reviewDate = formatReviewDate(review.created_at);
@@ -356,60 +238,34 @@ export default async function GamePage({
                 return (
                   <li
                     key={review.id}
-                    className="rounded-[16px] border p-4"
-                    style={{
-                      borderColor: BORDER,
-                      backgroundColor: "#FCFCFD",
-                    }}
+                    className="border border-hairline-soft bg-surface p-4"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span
-                          className="flex size-8 items-center justify-center rounded-full text-[0.75rem] font-semibold text-white"
-                          style={{
-                            background:
-                              "linear-gradient(135deg, #FF6B00, #7C3AED)",
-                          }}
-                        >
-                          {(username ?? "?").charAt(0).toUpperCase()}
-                        </span>
+                        <SquareAvatar name={username} />
                         {username ? (
-                          <Link
-                            href={`/u/${username}`}
-                            className="text-[0.875rem] font-semibold underline-offset-4 hover:text-[#FF6B00] hover:underline"
-                          >
+                          <TextLink href={`/u/${username}`}>
                             @{username}
-                          </Link>
+                          </TextLink>
                         ) : (
-                          <span className="text-[0.875rem] font-semibold">
+                          <span className="text-base font-semibold text-ink">
                             Anonymous
                           </span>
                         )}
                       </div>
 
-                      <div
-                        className="flex items-center gap-3 text-[0.75rem]"
-                        style={{ color: MUTED }}
-                      >
-                        <span
-                          className="inline-flex items-center gap-1 font-semibold"
-                          style={{ color: "#FF6B00" }}
-                        >
-                          <Star
-                            className="size-3.5"
-                            style={{ fill: "#FF6B00", color: "#FF6B00" }}
-                          />
-                          {review.rating}/5
-                        </span>
-                        {reviewDate && <span>{reviewDate}</span>}
+                      <div className="flex items-center gap-2">
+                        <RatingValue value={review.rating} />
+                        {reviewDate && (
+                          <span className="text-xs text-muted">
+                            {reviewDate}
+                          </span>
+                        )}
                       </div>
                     </div>
 
                     {review.body && (
-                      <p
-                        className="mt-3 whitespace-pre-line text-[0.875rem] leading-[1.7]"
-                        style={{ color: MUTED }}
-                      >
+                      <p className="mt-2 whitespace-pre-line text-base leading-[1.5] text-muted">
                         {review.body}
                       </p>
                     )}
@@ -418,27 +274,15 @@ export default async function GamePage({
               })}
             </ul>
           ) : (
-            <div
-              className="mt-5 flex flex-col items-center rounded-[16px] border px-6 py-10 text-center"
-              style={{ borderColor: BORDER }}
-            >
-              <div
-                className="flex size-12 items-center justify-center rounded-[12px]"
-                style={{ backgroundColor: "rgba(255, 107, 0, 0.10)" }}
-              >
-                <MessageSquare
-                  className="size-5"
-                  style={{ color: "#FF6B00" }}
-                />
-              </div>
-              <p className="mt-3 font-semibold">No reviews yet</p>
-              <p className="mt-1 text-[0.875rem]" style={{ color: MUTED }}>
-                Be the first to share your thoughts about this game.
-              </p>
-            </div>
+            <p className="mt-2 text-base leading-[1.5] text-muted">
+              No reviews yet.{" "}
+              <TextLink href={user ? "#your-review" : "/login"}>
+                {user ? "Write a review" : "Sign in to review"}
+              </TextLink>
+            </p>
           )}
-        </section>
-      </div>
-    </main>
+        </Card>
+      </Container>
+    </PageShell>
   );
 }

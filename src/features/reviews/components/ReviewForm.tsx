@@ -7,13 +7,7 @@ import { z } from "zod";
 import { Loader2, Send, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
-
-/* DESIGN2 tokens
-   primary #FF6B00 · surface #F8FAFC
-   radius: sm 12px                                                   */
-
-const INK = "#171525";
-const MUTED = "#64748B";
+import { Button, Label, Textarea } from "@/components/gm";
 
 const schema = z.object({
   rating: z
@@ -114,9 +108,9 @@ export function ReviewForm({
   }
 
   return (
-    <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+    <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
       <div>
-        <span className="text-[0.8125rem] font-medium tracking-[0.02em]">
+        <span className="block text-xs font-semibold text-ink">
           Your rating
         </span>
         <div
@@ -133,78 +127,70 @@ export function ReviewForm({
                 role="radio"
                 aria-checked={rating === value}
                 aria-label={`${value} star${value === 1 ? "" : "s"}`}
-                onClick={() => setValue("rating", value, { shouldValidate: true })}
-                className="flex size-10 items-center justify-center rounded-[10px] transition-colors duration-200 hover:bg-[#FFF4EC]"
+                onClick={() =>
+                  setValue("rating", value, { shouldValidate: true })
+                }
+                className="flex size-11 items-center justify-center rounded-none transition-colors duration-150 hover:bg-primary-tint focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 <Star
-                  className="size-6"
-                  style={
+                  className={
                     active
-                      ? { fill: "#FF6B00", color: "#FF6B00" }
-                      : { color: "#CBD5E1" }
+                      ? "size-6 fill-rating text-rating"
+                      : "size-6 text-star-empty"
                   }
+                  aria-hidden="true"
                 />
               </button>
             );
           })}
-          <span className="ml-2 text-[0.8125rem]" style={{ color: MUTED }}>
+          <span className="ml-2 text-xs font-semibold text-ink">
             {rating > 0 ? `${rating}/5` : "Pick a rating"}
           </span>
         </div>
         {errors.rating && (
-          <p className="mt-1 text-[0.8125rem] text-red-600">
+          <p className="mt-1 text-xs text-error-text">
             {errors.rating.message}
           </p>
         )}
       </div>
 
       <div>
-        <label
-          htmlFor="review-body"
-          className="text-[0.8125rem] font-medium tracking-[0.02em]"
-        >
-          Review <span style={{ color: MUTED }}>(optional)</span>
-        </label>
-        <textarea
+        <Label htmlFor="review-body">
+          Review <span className="font-normal text-muted">(optional)</span>
+        </Label>
+        <Textarea
           id="review-body"
           rows={4}
           maxLength={2000}
           placeholder="What did you think about this game?"
           {...register("body")}
-          className="mt-2 w-full resize-y rounded-[12px] border bg-white p-3 text-[0.95rem] leading-[1.6] outline-none transition-shadow duration-200 placeholder:text-[#94A3B8] focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2"
-          style={{ borderColor: "#E2E8F0", color: INK }}
+          className="mt-2"
         />
-        <div className="mt-1 flex items-start justify-between gap-4 text-[0.75rem]">
-          <span className="text-red-600">{errors.body?.message}</span>
-          <span style={{ color: MUTED }}>{body.length}/2000</span>
+        <div className="mt-1 flex items-start justify-between gap-4 text-xs">
+          <span className="text-error-text">{errors.body?.message}</span>
+          <span className="text-muted">{body.length}/2000</span>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-[12px] bg-[#FF6B00] px-4 text-[0.875rem] font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#E66000] hover:shadow-[0_6px_16px_rgba(255,107,0,0.28)] disabled:pointer-events-none disabled:opacity-60"
-        >
+        <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
-            <Loader2 className="size-4 animate-spin" />
+            <Loader2 className="size-4 animate-spin" aria-hidden="true" />
           ) : (
-            <Send className="size-4" />
+            <Send aria-hidden="true" />
           )}
           {hasReview ? "Update review" : "Post review"}
-        </button>
+        </Button>
 
         {hasReview && (
-          <button
-            type="button"
+          <Button
+            variant="destructive"
             onClick={onDelete}
             disabled={isSubmitting}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-[12px] border bg-white px-4 text-[0.875rem] font-semibold text-red-600 transition-colors duration-200 hover:border-red-300 hover:bg-red-50 disabled:pointer-events-none disabled:opacity-60"
-            style={{ borderColor: "rgba(220, 38, 38, 0.22)" }}
           >
-            <Trash2 className="size-4" />
+            <Trash2 aria-hidden="true" />
             Delete review
-          </button>
+          </Button>
         )}
       </div>
     </form>

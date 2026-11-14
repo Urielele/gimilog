@@ -1,25 +1,17 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ArrowRight,
-  CalendarDays,
-  Gamepad2,
-  MessageSquare,
-  Star,
-} from "lucide-react";
+import { CalendarDays, Gamepad2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-
-/* DESIGN2 tokens
-   primary #FF6B00 · secondary #7C3AED · tertiary #2563EB
-   surface #F8FAFC · accent #FFC107 · neutral #FFFFFF
-   radius: sm 12px · md 24px                                          */
-
-const INK = "#171525";
-const MUTED = "#64748B";
-const BORDER = "rgba(23, 21, 37, 0.08)";
-const CARD_SHADOW = "0 2px 12px rgba(0, 0, 0, 0.06)";
+import {
+  Card,
+  Container,
+  PageShell,
+  RatingValue,
+  SectionHeading,
+  SquareAvatar,
+  TextLink,
+} from "@/components/gm";
 
 const STATUS_ORDER = ["wishlist", "playing", "finished"] as const;
 const STATUS_LABEL: Record<string, string> = {
@@ -122,79 +114,54 @@ export default async function ProfilePage({
   const logs = (logsData ?? []) as unknown as LogRow[];
   const joined = formatDate(profile.created_at, false);
 
+  const tabClass = (isActive: boolean) =>
+    isActive
+      ? "inline-flex h-11 items-center border-b-2 border-primary px-1 text-xs font-semibold text-primary-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      : "inline-flex h-11 items-center border-b-2 border-transparent px-1 text-xs font-semibold text-muted transition-colors duration-150 hover:text-primary-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
+
   return (
-    <main className="min-h-[100dvh] bg-[#F8FAFC]" style={{ color: INK }}>
-      <div className="mx-auto w-full max-w-[1100px] px-6 py-12 md:py-16">
-        <Link
+    <PageShell>
+      <Container className="py-12">
+        <TextLink
           href="/"
-          className="text-[0.8125rem] underline-offset-4 transition-colors hover:text-[#FF6B00] hover:underline"
-          style={{ color: MUTED }}
+          className="inline-flex h-11 items-center"
         >
           ← Back to home
-        </Link>
+        </TextLink>
 
-        <header
-          className="mt-6 rounded-[24px] border bg-white p-6 md:p-8"
-          style={{ borderColor: BORDER, boxShadow: CARD_SHADOW }}
-        >
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-            <div
-              className="flex size-20 shrink-0 items-center justify-center rounded-[24px] text-[1.75rem] font-bold text-white"
-              style={{
-                background: "linear-gradient(135deg, #FF6B00, #7C3AED)",
-              }}
-            >
-              {profile.username.charAt(0).toUpperCase()}
-            </div>
+        <Card className="mt-6 p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <SquareAvatar name={profile.username} size="lg" />
 
             <div className="min-w-0">
-              <h1 className="text-[1.75rem] font-bold tracking-[-0.02em]">
+              <h1 className="text-2xl leading-[1.25] font-semibold text-ink">
                 @{profile.username}
               </h1>
               {profile.bio && (
-                <p
-                  className="mt-1 max-w-[640px] text-[0.95rem] leading-[1.6]"
-                  style={{ color: MUTED }}
-                >
+                <p className="mt-1 max-w-[640px] text-base leading-[1.5] text-muted">
                   {profile.bio}
                 </p>
               )}
               {joined && (
-                <p
-                  className="mt-2 inline-flex items-center gap-1.5 text-[0.8125rem]"
-                  style={{ color: MUTED }}
-                >
-                  <CalendarDays className="size-3.5" />
+                <p className="mt-2 inline-flex items-center gap-1 text-xs text-muted">
+                  <CalendarDays className="size-3.5" aria-hidden="true" />
                   Member since {joined}
                 </p>
               )}
             </div>
           </div>
-        </header>
+        </Card>
 
-        <div
-          className="mt-8 flex gap-6 border-b text-[0.875rem]"
-          style={{ borderColor: BORDER }}
-        >
+        <div className="mt-8 flex gap-6 border-b border-hairline-soft">
           <Link
             href={`/u/${profile.username}?tab=review`}
-            className={
-              tab === "review"
-                ? "border-b-2 border-[#FF6B00] pb-2 font-semibold text-[#FF6B00]"
-                : "pb-2 font-medium transition-colors hover:text-[#FF6B00]"
-            }
-            style={tab === "review" ? undefined : { color: MUTED }}
+            className={tabClass(tab === "review")}
           >
             Reviews ({reviews.length})
           </Link>
           <Link
             href={`/u/${profile.username}?tab=backlog`}
-            className={
-              tab === "backlog"
-                ? "border-b-2 border-[#FF6B00] pb-2 font-semibold text-[#FF6B00]"
-                : "pb-2 font-medium transition-colors hover:text-[#FF6B00]"
-            }
-            style={tab === "backlog" ? undefined : { color: MUTED }}
+            className={tabClass(tab === "backlog")}
           >
             Backlog ({logs.length})
           </Link>
@@ -202,99 +169,57 @@ export default async function ProfilePage({
 
         {tab === "backlog" ? (
           logs.length ? (
-            <div className="mt-6 flex flex-col gap-6">
+            <div className="mt-6 flex flex-col gap-4">
               {STATUS_ORDER.map((status) => {
                 const items = logs.filter((log) => log.status === status);
+                if (!items.length) return null;
 
                 return (
-                  <section
-                    key={status}
-                    className="rounded-[24px] border bg-white p-6 md:p-7"
-                    style={{ borderColor: BORDER, boxShadow: CARD_SHADOW }}
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <h2 className="text-[1.25rem] font-semibold tracking-[-0.01em]">
-                        {STATUS_LABEL[status]}
-                      </h2>
-                      <span
-                        className="rounded-full px-3 py-1 text-[0.75rem] font-medium"
-                        style={{
-                          backgroundColor:
-                            status === "playing"
-                              ? "rgba(255, 107, 0, 0.10)"
-                              : status === "wishlist"
-                                ? "rgba(124, 58, 237, 0.10)"
-                                : "rgba(37, 99, 235, 0.10)",
-                          color:
-                            status === "playing"
-                              ? "#FF6B00"
-                              : status === "wishlist"
-                                ? "#7C3AED"
-                                : "#2563EB",
-                        }}
-                      >
-                        {items.length} {items.length === 1 ? "game" : "games"}
-                      </span>
-                    </div>
+                  <Card key={status} className="p-6">
+                    <SectionHeading>
+                      {STATUS_LABEL[status]} ({items.length})
+                    </SectionHeading>
 
-                    {items.length ? (
-                      <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                        {items.map((log, index) => {
-                          const game = getGame(log.games);
-                          if (!game?.slug) return null;
+                    <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                      {items.map((log, index) => {
+                        const game = getGame(log.games);
+                        if (!game?.slug) return null;
 
-                          return (
-                            <li key={`${game.slug}-${index}`}>
-                              <Link
-                                href={`/games/${game.slug}`}
-                                className="group block"
-                              >
-                                {game.cover_url ? (
-                                  <img
-                                    src={game.cover_url}
-                                    alt={game.title ?? game.slug}
-                                    loading="lazy"
-                                    className="aspect-[3/4] w-full rounded-[12px] border object-cover transition-transform duration-200 group-hover:-translate-y-1"
-                                    style={{ borderColor: BORDER }}
+                        return (
+                          <li key={`${game.slug}-${index}`}>
+                            <Link
+                              href={`/games/${game.slug}`}
+                              className="group block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                            >
+                              {game.cover_url ? (
+                                <img
+                                  src={game.cover_url}
+                                  alt={game.title ?? game.slug}
+                                  loading="lazy"
+                                  className="aspect-[3/4] w-full border border-hairline-soft object-cover"
+                                />
+                              ) : (
+                                <div className="flex aspect-[3/4] w-full items-center justify-center border border-hairline-soft bg-surface-raised">
+                                  <Gamepad2
+                                    className="size-8 text-muted"
+                                    aria-hidden="true"
                                   />
-                                ) : (
-                                  <div
-                                    className="flex aspect-[3/4] w-full items-center justify-center rounded-[12px] border"
-                                    style={{
-                                      borderColor: BORDER,
-                                      background:
-                                        "linear-gradient(135deg, #FFE9D6, #EDE4FE)",
-                                    }}
-                                  >
-                                    <Gamepad2
-                                      className="size-8"
-                                      style={{ color: "#FF6B00" }}
-                                    />
-                                  </div>
-                                )}
-                                <p className="mt-2 line-clamp-2 text-[0.8125rem] font-semibold leading-snug transition-colors group-hover:text-[#FF6B00]">
-                                  {game.title ?? game.slug}
-                                </p>
-                              </Link>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    ) : (
-                      <p className="mt-3 text-[0.875rem]" style={{ color: MUTED }}>
-                        No games in this status yet.
-                      </p>
-                    )}
-                  </section>
+                                </div>
+                              )}
+                              <p className="mt-2 line-clamp-2 text-base leading-[1.5] font-semibold text-ink group-hover:text-primary-text">
+                                {game.title ?? game.slug}
+                              </p>
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </Card>
                 );
               })}
             </div>
           ) : (
-            <EmptyState
-              icon={<Gamepad2 className="size-5" style={{ color: "#FF6B00" }} />}
-              title="No backlog yet"
-              description="Games marked as wishlist, playing, or finished will show up here."
-            />
+            <EmptyState message="No backlog yet." />
           )
         ) : reviews.length ? (
           <ul className="mt-6 flex flex-col gap-4">
@@ -303,125 +228,75 @@ export default async function ProfilePage({
               const reviewDate = formatDate(review.created_at);
 
               return (
-                <li
-                  key={review.id}
-                  className="rounded-[24px] border bg-white p-5 md:p-6"
-                  style={{ borderColor: BORDER, boxShadow: CARD_SHADOW }}
-                >
-                  <div className="flex gap-4">
-                    {game?.cover_url ? (
-                      <img
-                        src={game.cover_url}
-                        alt={game.title ?? game.slug ?? "Game cover"}
-                        loading="lazy"
-                        className="h-[96px] w-[72px] shrink-0 rounded-[12px] border object-cover"
-                        style={{ borderColor: BORDER }}
-                      />
-                    ) : (
-                      <div
-                        className="flex h-[96px] w-[72px] shrink-0 items-center justify-center rounded-[12px] border"
-                        style={{
-                          borderColor: BORDER,
-                          background:
-                            "linear-gradient(135deg, #FFE9D6, #EDE4FE)",
-                        }}
-                      >
-                        <Gamepad2 className="size-6" style={{ color: "#FF6B00" }} />
-                      </div>
-                    )}
+                <li key={review.id}>
+                  <Card className="p-4">
+                    <div className="flex gap-4">
+                      {game?.cover_url ? (
+                        <img
+                          src={game.cover_url}
+                          alt={game.title ?? game.slug ?? "Game cover"}
+                          loading="lazy"
+                          className="h-24 w-16 shrink-0 border border-hairline-soft object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-24 w-16 shrink-0 items-center justify-center border border-hairline-soft bg-surface-raised">
+                          <Gamepad2
+                            className="size-6 text-muted"
+                            aria-hidden="true"
+                          />
+                        </div>
+                      )}
 
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        {game?.slug ? (
-                          <Link
-                            href={`/games/${game.slug}`}
-                            className="text-[1.0625rem] font-semibold underline-offset-4 hover:text-[#FF6B00] hover:underline"
-                          >
-                            {game.title ?? game.slug}
-                          </Link>
-                        ) : (
-                          <span className="text-[1.0625rem] font-semibold">
-                            Unknown game
-                          </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          {game?.slug ? (
+                            <Link
+                              href={`/games/${game.slug}`}
+                              className="text-base leading-[1.5] font-semibold text-ink underline-offset-4 hover:text-primary-text hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                            >
+                              {game.title ?? game.slug}
+                            </Link>
+                          ) : (
+                            <span className="text-base leading-[1.5] font-semibold text-ink">
+                              Unknown game
+                            </span>
+                          )}
+
+                          <RatingValue value={review.rating} />
+                        </div>
+
+                        {reviewDate && (
+                          <p className="mt-1 text-xs text-muted">
+                            {reviewDate}
+                          </p>
                         )}
 
-                        <span
-                          className="inline-flex items-center gap-1 text-[0.8125rem] font-semibold"
-                          style={{ color: "#FF6B00" }}
-                        >
-                          <Star
-                            className="size-3.5"
-                            style={{ fill: "#FF6B00", color: "#FF6B00" }}
-                          />
-                          {review.rating}/5
-                        </span>
+                        {review.body && (
+                          <p className="mt-2 line-clamp-4 whitespace-pre-line text-base leading-[1.5] text-muted">
+                            {review.body}
+                          </p>
+                        )}
                       </div>
-
-                      {reviewDate && (
-                        <p className="mt-1 text-[0.75rem]" style={{ color: MUTED }}>
-                          {reviewDate}
-                        </p>
-                      )}
-
-                      {review.body && (
-                        <p
-                          className="mt-3 line-clamp-4 whitespace-pre-line text-[0.875rem] leading-[1.7]"
-                          style={{ color: MUTED }}
-                        >
-                          {review.body}
-                        </p>
-                      )}
                     </div>
-                  </div>
+                  </Card>
                 </li>
               );
             })}
           </ul>
         ) : (
           <EmptyState
-            icon={
-              <MessageSquare className="size-5" style={{ color: "#FF6B00" }} />
-            }
-            title="No reviews yet"
-            description={`@${profile.username} has not reviewed any game yet.`}
+            message={`@${profile.username} has not reviewed any game yet.`}
           />
         )}
-      </div>
-    </main>
+      </Container>
+    </PageShell>
   );
 }
 
-function EmptyState({
-  icon,
-  title,
-  description,
-}: {
-  icon: ReactNode;
-  title: string;
-  description: string;
-}) {
+function EmptyState({ message }: { message: string }) {
   return (
-    <div
-      className="mt-6 flex flex-col items-center rounded-[24px] border bg-white px-6 py-12 text-center"
-      style={{ borderColor: BORDER, boxShadow: CARD_SHADOW }}
-    >
-      <div
-        className="flex size-12 items-center justify-center rounded-[12px]"
-        style={{ backgroundColor: "rgba(255, 107, 0, 0.10)" }}
-      >
-        {icon}
-      </div>
-      <p className="mt-3 font-semibold">{title}</p>
-      <p className="mt-1 max-w-[420px] text-[0.875rem]" style={{ color: MUTED }}>
-        {description}
-      </p>
-      <Link
-        href="/search"
-        className="mt-5 inline-flex h-10 items-center gap-2 rounded-[12px] bg-[#FF6B00] px-4 text-[0.875rem] font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#E66000] hover:shadow-[0_6px_16px_rgba(255,107,0,0.28)]"
-      >
-        Find a game
-        <ArrowRight className="size-4" />
-      </Link>
-    </div>
+    <p className="mt-6 text-base leading-[1.5] text-muted">
+      {message} <TextLink href="/search">Find a game</TextLink>
+    </p>
   );
 }

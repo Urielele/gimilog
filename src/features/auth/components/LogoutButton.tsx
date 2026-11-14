@@ -30,15 +30,17 @@ export function LogoutButton() {
       type="button"
       onClick={onLogout}
       disabled={loading}
-      className="inline-flex h-9 items-center gap-1.5 rounded-[12px] border bg-white px-3 text-[0.8125rem] font-medium transition-colors duration-200 hover:border-[#FF6B00] hover:text-[#FF6B00] disabled:pointer-events-none disabled:opacity-60"
-      style={{ borderColor: "rgba(23, 21, 37, 0.12)", color: "#64748B" }}
+      className="inline-flex h-11 items-center gap-1 rounded-none border border-hairline bg-canvas px-4 text-xs font-semibold text-muted transition-colors duration-150 hover:border-primary-text hover:text-primary-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:pointer-events-none disabled:opacity-50"
+      aria-label={loading ? "Signing out" : "Sign out"}
     >
       {loading ? (
-        <Loader2 className="size-3.5 animate-spin" />
+        <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
       ) : (
-        <LogOut className="size-3.5" />
+        <LogOut className="size-3.5" aria-hidden="true" />
       )}
-      {loading ? "Signing out..." : "Sign out"}
+      <span className="hidden sm:inline">
+        {loading ? "Signing out..." : "Sign out"}
+      </span>
     </button>
   );
 }

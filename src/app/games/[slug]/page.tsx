@@ -112,7 +112,7 @@ export default async function GamePage({
   return (
     <PageShell>
       <Container className="pt-8 pb-16">
-        <SearchBar />
+        <SearchBar variant="outlined" />
 
         <div className="mt-20 grid grid-cols-1 gap-8 md:grid-cols-[282px_1fr]">
           <div className="w-[200px] max-w-full md:w-[282px]">

@@ -11,7 +11,7 @@ export {
   selectClass,
   textareaClass,
 } from "./field";
-export { SquareAvatar } from "./avatar";
+export { CircleAvatar, SquareAvatar } from "./avatar";
 export { Container, PageShell, SectionHeading, Skeleton } from "./layout";
 export { RatingValue, Stars } from "./rating";
 export { TextLink } from "./text-link";

@@ -21,7 +21,7 @@ export async function Navbar() {
   }
 
   const myGamesHref =
-    user && username ? `/u/${username}?tab=backlog` : "/login";
+    user && username ? `/u/${username}/games` : "/login";
 
   const links = (
     <>
@@ -43,7 +43,7 @@ export async function Navbar() {
               Gimilog
             </Link>
 
-            <div className="hidden pt-6 items-center gap-[50px] md:flex">
+            <div className="hidden pt-4 items-center gap-[48px] md:flex">
               {links}
             </div>
           </div>

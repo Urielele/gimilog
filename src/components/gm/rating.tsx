@@ -23,9 +23,11 @@ export function RatingValue({
 
 export function Stars({
   value,
+  size = "sm",
   className,
 }: {
   value: number;
+  size?: "sm" | "md";
   className?: string;
 }) {
   return (
@@ -35,7 +37,7 @@ export function Stars({
           key={star}
           aria-hidden="true"
           className={cn(
-            "size-3.5",
+            size === "md" ? "size-4" : "size-3.5",
             star <= value
               ? "fill-star-fill text-brown-900"
               : "text-star-empty"

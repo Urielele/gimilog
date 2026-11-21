@@ -10,6 +10,7 @@ import {
   ExpandableText,
   PageShell,
   SearchBar,
+  TextLink,
 } from "@/components/gm";
 
 const inlineActionClass =
@@ -166,7 +167,7 @@ function SearchView() {
 
   return (
     <>
-      <SearchBar defaultValue={q} />
+      <SearchBar defaultValue={q} variant="outlined" />
 
       <h1 className="mt-8 font-about text-[clamp(24px,3vw,32px)] leading-[1.2] text-ink lowercase">
         showing matches for “{q}”
@@ -176,6 +177,10 @@ function SearchView() {
       <section aria-live="polite" className="mt-2">
         <SearchResults q={q} />
       </section>
+
+      <p className="mt-12 text-base text-text-soft">
+        Game data provided by <TextLink href="https://rawg.io">RAWG</TextLink>.
+      </p>
     </>
   );
 }

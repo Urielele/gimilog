@@ -9,10 +9,12 @@ export function SearchBar({
   defaultValue = "",
   className,
   id = "game-search",
+  variant = "plain",
 }: {
   defaultValue?: string;
   className?: string;
   id?: string;
+  variant?: "plain" | "outlined";
 }) {
   const router = useRouter();
 
@@ -38,7 +40,10 @@ export function SearchBar({
         defaultValue={defaultValue}
         placeholder="Search ..."
         aria-label="Search games"
-        className="h-[60px] w-full rounded-search border-2 border-[#6B4E3D] bg-surface-input pr-4 pl-[68px] text-[20px] leading-none text-ink shadow-search outline-none transition-colors duration-150 placeholder:text-placeholder-search focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown-900"
+        className={cn(
+          "h-[60px] w-full rounded-search bg-surface-input pr-4 pl-[68px] text-[20px] leading-none text-ink shadow-search outline-none transition-colors duration-150 placeholder:text-placeholder-search focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown-900",
+          variant === "outlined" && "border-2 border-brown-900"
+        )}
       />
     </form>
   );

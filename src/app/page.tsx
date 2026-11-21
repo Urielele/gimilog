@@ -1,188 +1,41 @@
-import Link from "next/link";
-import { ArrowRight, Gamepad2 } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
-import {
-  ButtonLink,
-  Card,
-  Container,
-  PageShell,
-  RatingValue,
-  SectionHeading,
-  TextLink,
-} from "@/components/gm";
+import Image from "next/image";
+import { Container, PageShell, SearchBar } from "@/components/gm";
 
-type GameRef = {
-  slug: string | null;
-  title: string | null;
-  cover_url: string | null;
-};
+// Tepi ilustrasi memudar ke warna halaman, membentuk mangkuk terbalik.
+const heroMask =
+  "radial-gradient(ellipse 52% 100% at 50% 0%, #000 58%, transparent 100%)";
 
-type ProfileRef = { username: string | null };
-
-type ReviewRow = {
-  id: number;
-  rating: number;
-  body: string | null;
-  created_at: string | null;
-  games: GameRef | GameRef[] | null;
-  profiles: ProfileRef | ProfileRef[] | null;
-};
-
-function first<T>(value: T | T[] | null) {
-  if (!value) return null;
-  return Array.isArray(value) ? (value[0] ?? null) : value;
-}
-
-function formatDate(value: string | null) {
-  if (!value) return null;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-  return new Intl.DateTimeFormat("en-US", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(date);
-}
-
-export default async function HomePage() {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("reviews")
-    .select(
-      "id, rating, body, created_at, games(slug, title, cover_url), profiles(username)"
-    )
-    .order("created_at", { ascending: false })
-    .limit(6);
-
-  const reviews = (data ?? []) as unknown as ReviewRow[];
-
+export default function HomePage() {
   return (
     <PageShell>
-      <section className="border-b border-hairline-soft bg-canvas">
-        <Container className="py-16">
-          <h1 className="text-display font-semibold text-ink">
-            Your game backlog
-          </h1>
+      <section
+        aria-label="Gimilog"
+        className="relative h-[320px] w-full overflow-hidden bg-page sm:h-[520px] lg:h-[680px]"
+      >
+        <div
+          className="absolute inset-x-0 top-0 mx-auto h-full w-full max-w-[1280px]"
+          style={{ maskImage: heroMask, WebkitMaskImage: heroMask }}
+        >
+          <Image
+            src="/hero/hero.jpg"
+            alt="Pink round character diving underwater with a snorkel mask"
+            fill
+            preload
+            sizes="(min-width: 1280px) 1280px, 100vw"
+            className="object-cover object-top sm:object-center"
+          />
+        </div>
 
-          <p className="mt-4 max-w-[640px] text-base leading-[1.5] text-muted">
-            Keep a wishlist, track what you are playing, and review the games
-            you finish.
-          </p>
-
-          <div className="mt-8">
-            <ButtonLink href="/search">
-              Find a game
-              <ArrowRight aria-hidden="true" />
-            </ButtonLink>
-          </div>
-        </Container>
+        <h1 className="absolute inset-x-0 bottom-20 z-10 px-6 text-center text-[22px] leading-[1.3] font-bold text-ink [text-shadow:0_2px_6px_rgba(80,50,30,0.35)] sm:text-[32px] sm:leading-[45px]">
+          <span className="block">Log what you’re playing.</span>
+          <span className="block">Wishlist what’s next.</span>
+          <span className="block">Rate the games you finish.</span>
+        </h1>
       </section>
 
-      <section className="bg-surface">
-        <Container className="py-16">
-          <SectionHeading>Latest reviews</SectionHeading>
-
-          {reviews.length ? (
-            <ul className="mt-8 flex flex-col gap-4">
-              {reviews.map((review) => {
-                const game = first(review.games);
-                const profile = first(review.profiles);
-                const reviewDate = formatDate(review.created_at);
-
-                return (
-                  <li key={review.id}>
-                    <Card className="p-4">
-                      <div className="flex gap-4">
-                        {game?.cover_url ? (
-                          <img
-                            src={game.cover_url}
-                            alt={game.title ?? game.slug ?? "Game cover"}
-                            loading="lazy"
-                            className="h-24 w-16 shrink-0 border border-hairline-soft object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-24 w-16 shrink-0 items-center justify-center border border-hairline-soft bg-surface-raised">
-                            <Gamepad2
-                              className="size-6 text-muted"
-                              aria-hidden="true"
-                            />
-                          </div>
-                        )}
-
-                        <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-start justify-between gap-2">
-                            {game?.slug ? (
-                              <Link
-                                href={`/games/${game.slug}`}
-                                className="text-base leading-[1.5] font-semibold text-ink underline-offset-4 hover:text-primary-text hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                              >
-                                {game.title ?? game.slug}
-                              </Link>
-                            ) : (
-                              <span className="text-base leading-[1.5] font-semibold text-ink">
-                                Unknown game
-                              </span>
-                            )}
-
-                            <RatingValue value={review.rating} />
-                          </div>
-
-                          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted">
-                            {profile?.username ? (
-                              <TextLink href={`/u/${profile.username}`}>
-                                @{profile.username}
-                              </TextLink>
-                            ) : (
-                              <span>Anonymous</span>
-                            )}
-                            {reviewDate && (
-                              <>
-                                <span aria-hidden="true">·</span>
-                                <span>{reviewDate}</span>
-                              </>
-                            )}
-                          </div>
-
-                          {review.body ? (
-                            <p className="mt-4 line-clamp-3 text-base leading-[1.5] text-muted">
-                              {review.body}
-                            </p>
-                          ) : (
-                            <p className="mt-4 text-base leading-[1.5] text-muted italic">
-                              Rated without a written review.
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </Card>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <p className="mt-4 text-base leading-[1.5] text-muted">
-              No reviews yet. <TextLink href="/search">Find a game</TextLink>
-            </p>
-          )}
-        </Container>
-      </section>
-
-      <footer className="border-t border-hairline-soft bg-canvas">
-        <Container className="py-8">
-          <p className="text-center text-xs text-ink">
-            Game data provided by{" "}
-            <a
-              href="https://rawg.io"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-primary-text underline underline-offset-4 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            >
-              RAWG
-            </a>
-            .
-          </p>
-        </Container>
-      </footer>
+      <Container className="pt-10 pb-24">
+        <SearchBar variant="outlined" />
+      </Container>
     </PageShell>
   );
 }

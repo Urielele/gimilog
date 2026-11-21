@@ -5,6 +5,7 @@ import { cn } from "cn";
 
 // Tailwind tidak menemukan nama class yang dibangun secara dinamis, jadi daftar statis.
 const clampClasses: Record<number, string> = {
+  2: "line-clamp-2",
   3: "line-clamp-3",
   5: "line-clamp-5",
   8: "line-clamp-8",

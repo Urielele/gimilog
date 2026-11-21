@@ -65,8 +65,8 @@ export function LogButtons({
   }
 
   return (
-    <div>
-      <div className="flex flex-wrap gap-2">
+    <div className="min-w-0">
+      <div className="flex flex-row flex-wrap gap-3 md:flex-col md:gap-8">
         {STATUSES.map((status) => {
           const Icon = status.icon;
           const active = current === status.value;
@@ -75,13 +75,16 @@ export function LogButtons({
           return (
             <Button
               key={status.value}
-              variant={active ? "primary" : "secondary"}
+              variant="status"
               onClick={() => setStatus(status.value)}
               disabled={pending !== null}
               aria-pressed={active}
+              className={`h-[38px] w-[146px] justify-start gap-2 text-[18px] leading-none [&_svg]:size-5 ${
+                active ? "bg-brown-500-active hover:bg-brown-500-active" : ""
+              }`}
             >
               {busy ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                <Loader2 className="animate-spin" aria-hidden="true" />
               ) : (
                 <Icon aria-hidden="true" />
               )}
@@ -91,11 +94,11 @@ export function LogButtons({
         })}
       </div>
 
-      {current && (
-        <p className="mt-2 text-xs text-muted">
+      {/* {current && (
+        <p className="mt-3 text-xs text-text-soft md:mt-8">
           Click the active status again to remove it from your backlog.
         </p>
-      )}
+      )} */}
     </div>
   );
 }

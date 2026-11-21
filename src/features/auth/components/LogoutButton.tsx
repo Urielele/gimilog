@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Loader2, LogOut } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 
@@ -30,17 +30,13 @@ export function LogoutButton() {
       type="button"
       onClick={onLogout}
       disabled={loading}
-      className="inline-flex h-11 items-center gap-1 rounded-none border border-hairline bg-canvas px-4 text-xs font-semibold text-muted transition-colors duration-150 hover:border-primary-text hover:text-primary-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:pointer-events-none disabled:opacity-50"
+      className="inline-flex h-[38px] items-center justify-center gap-2 rounded-button bg-brown-900 px-4 text-[22px] leading-none font-medium text-on-brown shadow-button transition-colors duration-150 hover:bg-brown-900-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown-900 disabled:pointer-events-none disabled:opacity-50"
       aria-label={loading ? "Signing out" : "Sign out"}
     >
-      {loading ? (
-        <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
-      ) : (
-        <LogOut className="size-3.5" aria-hidden="true" />
+      {loading && (
+        <Loader2 className="size-4 animate-spin" aria-hidden="true" />
       )}
-      <span className="hidden sm:inline">
-        {loading ? "Signing out..." : "Sign out"}
-      </span>
+      {loading ? "Signing out…" : "Sign Out"}
     </button>
   );
 }

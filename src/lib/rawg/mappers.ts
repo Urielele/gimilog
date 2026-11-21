@@ -17,6 +17,8 @@ export function mapRawgDetail(g: RawgGame) {
   return {
     ...mapRawgSearchResult(g),
     summary: g.description_raw ?? "",
+    // "" = sudah diambil dari RAWG tapi game-nya memang tidak punya developer.
+    developer: g.developers?.[0]?.name ?? "",
     synced_at: new Date().toISOString(),
   };
 }

@@ -10,7 +10,7 @@ export function PageShell({
 }) {
   return (
     <main
-      className={cn("min-h-[100dvh] bg-surface text-ink", className)}
+      className={cn("min-h-[100dvh] bg-page text-ink", className)}
     >
       {children}
     </main>
@@ -25,7 +25,7 @@ export function Container({
   className?: string;
 }) {
   return (
-    <div className={cn("mx-auto w-full max-w-[896px] px-6", className)}>
+    <div className={cn("mx-auto w-full max-w-[1070px] px-6", className)}>
       {children}
     </div>
   );
@@ -54,7 +54,7 @@ export function Skeleton({ className }: { className?: string }) {
   return (
     <div
       aria-hidden="true"
-      className={cn("bg-surface-raised", className)}
+      className={cn("bg-field", className)}
     />
   );
 }

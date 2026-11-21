@@ -4,11 +4,14 @@ import { cn } from "cn";
 export const labelClass = "block text-xs font-semibold text-ink";
 
 const fieldBase =
-  "w-full rounded-[2px] border border-hairline bg-canvas text-base text-ink outline-none transition-colors duration-150 placeholder:text-placeholder focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-50";
+  "w-full rounded-field border border-hairline bg-surface-input text-base text-ink outline-none transition-colors duration-150 placeholder:text-placeholder-search focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown-900 disabled:cursor-not-allowed disabled:opacity-50";
 
 export const inputClass = cn(fieldBase, "h-11 px-4");
 export const selectClass = cn(fieldBase, "h-11 cursor-pointer px-4");
-export const textareaClass = cn(fieldBase, "min-h-32 resize-y p-4 leading-[1.5]");
+export const textareaClass = cn(
+  fieldBase,
+  "min-h-24 max-h-[480px] resize-y border-2 border-brown-900 bg-field p-4 leading-[1.5] text-base placeholder:text-placeholder-field"
+);
 
 export function Label({ className, ...props }: ComponentProps<"label">) {
   return <label className={cn(labelClass, className)} {...props} />;

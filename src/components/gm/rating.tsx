@@ -15,7 +15,7 @@ export function RatingValue({
         className
       )}
     >
-      <Star className="size-3.5 fill-rating text-rating" aria-hidden="true" />
+      <Star className="size-3.5 fill-star-fill text-brown-900" aria-hidden="true" />
       {value}/5
     </span>
   );
@@ -37,7 +37,7 @@ export function Stars({
           className={cn(
             "size-3.5",
             star <= value
-              ? "fill-rating text-rating"
+              ? "fill-star-fill text-brown-900"
               : "text-star-empty"
           )}
         />

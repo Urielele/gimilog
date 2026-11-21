@@ -21,7 +21,7 @@ export function SquareAvatar({
     <span
       aria-hidden="true"
       className={cn(
-        "inline-flex shrink-0 items-center justify-center rounded-none bg-surface-raised text-base font-semibold text-ink",
+        "inline-flex shrink-0 items-center justify-center rounded-field bg-field text-base font-semibold text-ink",
         sizes[size],
         className
       )}

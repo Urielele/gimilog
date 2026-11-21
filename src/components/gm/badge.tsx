@@ -4,7 +4,7 @@ import { cn } from "cn";
 import { statusMeta, type LogStatus } from "@/theme/tokens";
 
 export const badgeStyles = cva(
-  "inline-flex items-center gap-1 rounded-none px-2 py-1 text-xs leading-[1.5] [&_svg]:size-3.5 [&_svg]:shrink-0",
+  "inline-flex items-center gap-1 rounded-field px-2 py-1 text-xs leading-[1.5] [&_svg]:size-3.5 [&_svg]:shrink-0",
   {
     variants: {
       tone: {

@@ -79,6 +79,7 @@ export type Database = {
         Row: {
           avg_rating: number | null
           cover_url: string | null
+          developer: string | null
           id: number
           rating_count: number | null
           rawg_id: number
@@ -91,6 +92,7 @@ export type Database = {
         Insert: {
           avg_rating?: number | null
           cover_url?: string | null
+          developer?: string | null
           id?: never
           rating_count?: number | null
           rawg_id: number
@@ -103,6 +105,7 @@ export type Database = {
         Update: {
           avg_rating?: number | null
           cover_url?: string | null
+          developer?: string | null
           id?: never
           rating_count?: number | null
           rawg_id?: number

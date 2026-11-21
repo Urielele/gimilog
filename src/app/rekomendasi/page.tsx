@@ -117,9 +117,9 @@ export default function RecommendationsPage() {
             Recommendations
           </h1>
 
-          <p className="mt-4 text-base leading-[1.5] text-muted">
+          {/* <p className="mt-4 text-base leading-[1.5] text-muted">
             Filter by genre, platform, rating, or playtime.
-          </p>
+          </p> */}
         </header>
 
         <div className="mt-8 grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">

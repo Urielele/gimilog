@@ -15,3 +15,5 @@ export { SquareAvatar } from "./avatar";
 export { Container, PageShell, SectionHeading, Skeleton } from "./layout";
 export { RatingValue, Stars } from "./rating";
 export { TextLink } from "./text-link";
+export { SearchBar } from "./search-bar";
+export { ExpandableText } from "./expandable-text";

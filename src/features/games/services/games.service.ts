@@ -24,8 +24,11 @@ export async function getGameBySlug(slug: string) {
 
   if (readError) throw readError;
 
-  // summary null = detail belum pernah diambil. "" = sudah, tapi memang kosong.
-  if (cached && cached.summary !== null) return cached;
+  // null = detail belum pernah diambil. "" = sudah, tapi memang kosong.
+  // Baris lama punya summary terisi tetapi developer null, jadi ikut diperbarui.
+  if (cached && cached.summary !== null && cached.developer !== null) {
+    return cached;
+  }
 
   const detail = (await rawg(`/games/${slug}`)) as RawgGame;
   const { data, error } = await supabaseAdmin

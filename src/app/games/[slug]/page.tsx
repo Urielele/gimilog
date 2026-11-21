@@ -1,15 +1,15 @@
 import { notFound } from "next/navigation";
-import { ArrowLeft, Gamepad2 } from "lucide-react";
+import { Gamepad2, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getGameBySlug } from "@/features/games/services/games.service";
 import { ReviewForm } from "@/features/reviews/components/ReviewForm";
 import { LogButtons } from "@/features/logs/components/LogButtons";
 import {
-  Card,
   Container,
+  ExpandableText,
   PageShell,
   RatingValue,
-  SectionHeading,
+  SearchBar,
   SquareAvatar,
   TextLink,
 } from "@/components/gm";
@@ -31,15 +31,10 @@ function getUsername(profiles: ReviewRow["profiles"]) {
   return profile?.username ?? null;
 }
 
-function formatReleaseDate(value: string | null) {
+function getYear(value: string | null) {
   if (!value) return null;
-  const date = new Date(`${value}T00:00:00`);
-  if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(date);
+  const year = value.slice(0, 4);
+  return /^\d{4}$/.test(year) ? year : null;
 }
 
 function formatReviewDate(value: string | null) {
@@ -110,127 +105,110 @@ export default async function GamePage({
   const avgRating =
     stats?.avg_rating != null ? Number(stats.avg_rating) : null;
 
-  const releaseDate = formatReleaseDate(game.release_date);
+  const year = getYear(game.release_date);
+  const developer = game.developer?.trim();
   const summary = game.summary?.trim();
 
   return (
     <PageShell>
-      <Container className="py-12">
-        <TextLink
-          href="/search"
-          className="inline-flex h-11 items-center gap-1"
-        >
-          <ArrowLeft className="size-4" aria-hidden="true" />
-          Back to search
-        </TextLink>
+      <Container className="pt-8 pb-16">
+        <SearchBar />
 
-        <div className="mt-8 grid gap-8 md:grid-cols-[240px_1fr] lg:gap-12">
-          <div className="max-w-60 md:max-w-none">
+        <div className="mt-20 grid grid-cols-1 gap-8 md:grid-cols-[282px_1fr]">
+          <div className="w-[200px] max-w-full md:w-[282px]">
             {game.cover_url ? (
               <img
                 src={game.cover_url}
                 alt={`Cover ${game.title}`}
-                className="aspect-[3/4] w-full border border-hairline-soft object-cover"
+                className="aspect-[3/4] w-full rounded-cover object-cover shadow-cover"
               />
             ) : (
-              <div className="flex aspect-[3/4] w-full items-center justify-center border border-hairline-soft bg-surface-raised">
+              <div className="flex aspect-[3/4] w-full items-center justify-center rounded-cover bg-field shadow-cover">
                 <Gamepad2
-                  className="size-10 text-muted"
+                  className="size-10 text-text-soft"
                   aria-hidden="true"
                 />
               </div>
             )}
           </div>
 
-          <div>
-            <h1 className="text-display font-semibold text-ink">
-              {game.title}
-            </h1>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+              <h1 className="break-words text-[clamp(28px,4vw,48px)] leading-[1.1] font-bold text-ink">
+                {game.title}
+              </h1>
+              {year && (
+                <span className="text-[0.65em] font-normal text-text-soft">
+                  {year}
+                </span>
+              )}
+            </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted">
-              {releaseDate && <span>Released {releaseDate}</span>}
+            {developer && (
+              <p className="mt-1 text-[clamp(20px,3vw,32px)] leading-[1.2] text-ink lowercase">
+                {developer.toLowerCase()}
+              </p>
+            )}
 
+            {summary ? (
+              <ExpandableText
+                lines={8}
+                moreLabel="more.."
+                lessLabel="less"
+                className="mt-6"
+              >
+                {summary}
+              </ExpandableText>
+            ) : (
+              <p className="mt-6 font-about text-[clamp(16px,2vw,22px)] leading-[1.4] text-text">
+                No description available for this game.
+              </p>
+            )}
+
+            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-base text-text-soft">
               {avgRating !== null ? (
                 <span className="inline-flex items-center gap-2">
-                  <RatingValue value={avgRating.toFixed(1)} />
-                  <span>
-                    ({ratingCount} review{ratingCount === 1 ? "" : "s"})
-                  </span>
+                  <Star
+                    className="size-4 fill-star-fill text-brown-900"
+                    aria-hidden="true"
+                  />
+                  {avgRating.toFixed(1)}/5 · {ratingCount} review
+                  {ratingCount === 1 ? "" : "s"}
                 </span>
               ) : (
                 <span>No ratings yet</span>
               )}
-            </div>
 
-            <Card className="mt-8 p-6">
-              <SectionHeading>About this game</SectionHeading>
-
-              {summary ? (
-                <p className="mt-2 whitespace-pre-line text-base leading-[1.5] text-muted">
-                  {summary}
-                </p>
-              ) : (
-                <p className="mt-2 text-base leading-[1.5] text-muted">
-                  No description available for this game.
-                </p>
-              )}
-            </Card>
-
-            <p className="mt-4 text-xs text-muted">
-              Game data provided by{" "}
-              <a
+              <TextLink
                 href="https://rawg.io"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-primary-text underline underline-offset-4 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="text-base text-text-soft"
               >
-                RAWG
-              </a>
-              .
-            </p>
+                Game data provided by RAWG
+              </TextLink>
+            </div>
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col gap-4">
-          <Card className="p-6">
-            <SectionHeading>Your backlog</SectionHeading>
+        <div className="my-8 h-0.5 w-full bg-divider" />
 
-            {user ? (
-              <div className="mt-4">
-                <LogButtons
-                  gameId={game.id}
-                  current={myLog?.status ?? null}
-                />
-              </div>
-            ) : (
-              <p className="mt-2 text-base leading-[1.5] text-muted">
-                <TextLink href="/login">Sign in</TextLink> to add this game to
-                your backlog.
-              </p>
-            )}
-          </Card>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-[146px_1fr] md:gap-14">
+          <LogButtons gameId={game.id} current={myLog?.status ?? null} />
 
-          <Card className="p-6" id="your-review">
-            <SectionHeading>Your review</SectionHeading>
-
-            {user ? (
-              <div className="mt-4">
-                <ReviewForm gameId={game.id} initial={myReview} />
-              </div>
-            ) : (
-              <p className="mt-2 text-base leading-[1.5] text-muted">
-                <TextLink href="/login">Sign in</TextLink> to rate and review
-                this game.
-              </p>
-            )}
-          </Card>
+          <div id="your-review" className="min-w-0">
+            <ReviewForm
+              gameId={game.id}
+              initial={myReview}
+            />
+          </div>
         </div>
 
-        <Card className="mt-4 p-6">
-          <SectionHeading>All reviews</SectionHeading>
+        <section className="mt-16">
+          <h2 className="text-[28px] leading-[1.2] font-bold text-ink">
+            All reviews
+          </h2>
 
           {reviewRows.length ? (
-            <ul className="mt-4 flex flex-col gap-2">
+            <ul className="mt-4 flex flex-col gap-4">
               {reviewRows.map((review) => {
                 const username = getUsername(review.profiles);
                 const reviewDate = formatReviewDate(review.created_at);
@@ -238,7 +216,7 @@ export default async function GamePage({
                 return (
                   <li
                     key={review.id}
-                    className="border border-hairline-soft bg-surface p-4"
+                    className="rounded-field bg-field p-4"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
@@ -257,7 +235,7 @@ export default async function GamePage({
                       <div className="flex items-center gap-2">
                         <RatingValue value={review.rating} />
                         {reviewDate && (
-                          <span className="text-xs text-muted">
+                          <span className="text-base text-text-soft">
                             {reviewDate}
                           </span>
                         )}
@@ -265,23 +243,25 @@ export default async function GamePage({
                     </div>
 
                     {review.body && (
-                      <p className="mt-2 whitespace-pre-line text-base leading-[1.5] text-muted">
+                      <ExpandableText
+                        lines={5}
+                        moreLabel="...more"
+                        lessLabel="less"
+                        className="mt-2 bg-field"
+                      >
                         {review.body}
-                      </p>
+                      </ExpandableText>
                     )}
                   </li>
                 );
               })}
             </ul>
           ) : (
-            <p className="mt-2 text-base leading-[1.5] text-muted">
-              No reviews yet.{" "}
-              <TextLink href={user ? "#your-review" : "/login"}>
-                {user ? "Write a review" : "Sign in to review"}
-              </TextLink>
+            <p className="mt-4 text-base text-text-soft">
+              No reviews yet. Be the first to write one.
             </p>
           )}
-        </Card>
+        </section>
       </Container>
     </PageShell>
   );

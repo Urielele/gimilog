@@ -4,4 +4,6 @@ export type GameSearchResult = {
   title: string;
   cover_url: string | null;
   release_date: string | null;
+  developer: string | null;
+  summary: string | null;
 };

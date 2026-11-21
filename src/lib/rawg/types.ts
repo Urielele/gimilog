@@ -6,6 +6,7 @@ export type RawgGame = {
   background_image: string | null;
   released: string | null;
   description_raw?: string | null;
+  developers?: { name: string }[];
   rating?: number;
   playtime?: number;
 };

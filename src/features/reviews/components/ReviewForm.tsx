@@ -113,9 +113,9 @@ export function ReviewForm({
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
       <div>
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-col items-center gap-2.5 md:flex-row md:flex-wrap">
           <div
-            className="flex flex-wrap items-center gap-2.5"
+            className="flex flex-wrap items-center justify-center gap-1 min-[360px]:gap-2.5 md:justify-start"
             role="radiogroup"
             aria-label="Rating"
             onMouseLeave={() => setHovered(null)}
@@ -150,7 +150,7 @@ export function ReviewForm({
               );
             })}
           </div>
-          <span className="text-base text-text-soft">
+          <span className="order-first text-center text-[16px] text-text-soft md:order-none md:text-base">
             {rating > 0 ? `${rating}/5` : "Pick a rating"}
           </span>
         </div>
@@ -160,7 +160,10 @@ export function ReviewForm({
       </div>
 
       <div>
-        <Label htmlFor="review-body" className="text-base font-normal text-text-soft">
+        <Label
+          htmlFor="review-body"
+          className="text-center text-base font-normal text-text-soft md:text-left"
+        >
           Write a review
         </Label>
         <Textarea
@@ -177,7 +180,7 @@ export function ReviewForm({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-4">
+      <div className="flex flex-wrap items-center justify-center gap-4 md:mt-4">
         <Button type="submit" disabled={isSubmitting} className="h-10 text-base">
           {isSubmitting ? (
             <Loader2 className="animate-spin" aria-hidden="true" />

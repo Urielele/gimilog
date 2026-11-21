@@ -17,12 +17,14 @@ export function ExpandableText({
   moreLabel = "more..",
   lessLabel = "less",
   className,
+  clampClassName,
 }: {
   children: string;
   lines: number;
   moreLabel?: string;
   lessLabel?: string;
   className?: string;
+  clampClassName?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [truncated, setTruncated] = useState(false);
@@ -61,7 +63,7 @@ export function ExpandableText({
         ref={textRef}
         className={cn(
           "break-words whitespace-pre-line text-[clamp(16px,2vw,22px)] leading-[1.4]",
-          !expanded && clampClass
+          !expanded && cn(clampClass, clampClassName)
         )}
       >
         {children}

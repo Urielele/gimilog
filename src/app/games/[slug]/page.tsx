@@ -104,6 +104,12 @@ export default async function GamePage({
   const ratingCount = Number(stats?.rating_count ?? 0);
   const avgRating =
     stats?.avg_rating != null ? Number(stats.avg_rating) : null;
+  const ratingText =
+    avgRating !== null
+      ? `${avgRating.toFixed(1)}/5 · ${ratingCount} review${
+          ratingCount === 1 ? "" : "s"
+        }`
+      : "No ratings yet";
 
   const year = getYear(game.release_date);
   const developer = game.developer?.trim();
@@ -114,8 +120,8 @@ export default async function GamePage({
       <Container className="pt-8 pb-16">
         <SearchBar variant="outlined" />
 
-        <div className="mt-20 grid grid-cols-1 gap-8 md:grid-cols-[282px_1fr]">
-          <div className="w-[200px] max-w-full md:w-[282px]">
+        <div className="mt-8 flex flex-col md:mt-20 md:grid md:grid-cols-[282px_1fr] md:gap-8">
+          <div className="mx-auto w-[190px] max-w-full md:mx-0 md:w-[282px]">
             {game.cover_url ? (
               <img
                 src={game.cover_url}
@@ -132,51 +138,72 @@ export default async function GamePage({
             )}
           </div>
 
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-              <h1 className="break-words text-[clamp(28px,4vw,48px)] leading-[1.1] font-bold text-ink">
+          <div className="mt-5 min-w-0 text-center md:mt-0 md:text-left">
+            <div className="flex flex-wrap items-baseline justify-center gap-x-4 gap-y-1 md:justify-start">
+              <h1 className="text-[20px] leading-[1.2] font-bold text-ink md:text-[clamp(28px,4vw,48px)] md:leading-[1.1]">
                 {game.title}
               </h1>
               {year && (
-                <span className="text-[0.65em] font-normal text-text-soft">
+                <span className="hidden text-[0.65em] font-normal text-text-soft md:inline">
                   {year}
                 </span>
               )}
             </div>
 
+            {(year || developer) && (
+              <p className="mt-1 flex items-center justify-center gap-1 text-[12px] leading-[1.2] text-text-soft md:hidden">
+                {year && <span>{year}</span>}
+                {year && developer && <span aria-hidden="true">|</span>}
+                {developer && (
+                  <span className="lowercase">{developer.toLowerCase()}</span>
+                )}
+              </p>
+            )}
+
+            <p className="mt-1 flex items-center justify-center gap-1 text-[12px] leading-[1.2] text-text-soft md:hidden">
+              {avgRating !== null && (
+                <Star
+                  className="size-3 fill-star-fill text-brown-900"
+                  aria-hidden="true"
+                />
+              )}
+              {ratingText}
+            </p>
+
             {developer && (
-              <p className="mt-1 text-[clamp(20px,3vw,32px)] leading-[1.2] text-ink lowercase">
+              <p className="mt-1 hidden text-[clamp(20px,3vw,32px)] leading-[1.2] text-ink lowercase md:block">
                 {developer.toLowerCase()}
               </p>
             )}
 
-            {summary ? (
-              <ExpandableText
-                lines={8}
-                moreLabel="more.."
-                lessLabel="less"
-                className="mt-6"
-              >
-                {summary}
-              </ExpandableText>
-            ) : (
-              <p className="mt-6 font-about text-[clamp(16px,2vw,22px)] leading-[1.4] text-text">
-                No description available for this game.
-              </p>
-            )}
+            <div className="mt-4 text-left md:mt-6">
+              {summary ? (
+                <ExpandableText
+                  lines={8}
+                  moreLabel="more.."
+                  lessLabel="less"
+                  clampClassName="max-md:line-clamp-12"
+                >
+                  {summary}
+                </ExpandableText>
+              ) : (
+                <p className="font-about text-[clamp(16px,2vw,22px)] leading-[1.4] text-text">
+                  No description available for this game.
+                </p>
+              )}
+            </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-base text-text-soft">
+            <div className="mt-4 hidden flex-wrap items-center gap-x-4 gap-y-2 text-base text-text-soft md:flex">
               {avgRating !== null ? (
                 <span className="inline-flex items-center gap-2">
                   <Star
                     className="size-4 fill-star-fill text-brown-900"
                     aria-hidden="true"
                   />
-                  {avgRating.toFixed(1)}/5 · {ratingCount} review
-                  {ratingCount === 1 ? "" : "s"}
+                  {ratingText}
                 </span>
               ) : (
-                <span>No ratings yet</span>
+                <span>{ratingText}</span>
               )}
 
               <TextLink
@@ -189,16 +216,13 @@ export default async function GamePage({
           </div>
         </div>
 
-        <div className="my-8 h-0.5 w-full bg-divider" />
+        <div className="mt-6 mb-4 h-0.5 w-full bg-divider md:mt-8 md:mb-8" />
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-[146px_1fr] md:gap-14">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-[146px_1fr] md:gap-14">
           <LogButtons gameId={game.id} current={myLog?.status ?? null} />
 
           <div id="your-review" className="min-w-0">
-            <ReviewForm
-              gameId={game.id}
-              initial={myReview}
-            />
+            <ReviewForm gameId={game.id} initial={myReview} />
           </div>
         </div>
 
@@ -262,6 +286,10 @@ export default async function GamePage({
             </p>
           )}
         </section>
+
+        <p className="mt-8 text-center text-[12px] leading-[1.4] text-text-soft md:hidden">
+          Game data provided by <TextLink href="https://rawg.io">RAWG</TextLink>.
+        </p>
       </Container>
     </PageShell>
   );

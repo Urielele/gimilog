@@ -30,7 +30,7 @@ export function SearchBar({
         Search games
       </label>
       <Search
-        className="pointer-events-none absolute top-1/2 left-5 size-6 -translate-y-1/2 text-placeholder-search"
+        className="pointer-events-none absolute top-1/2 left-4 size-6 -translate-y-1/2 text-placeholder-search md:left-5"
         aria-hidden="true"
       />
       <input
@@ -41,8 +41,8 @@ export function SearchBar({
         placeholder="Search ..."
         aria-label="Search games"
         className={cn(
-          "h-[60px] w-full rounded-search bg-surface-input pr-4 pl-[68px] text-[20px] leading-none text-ink shadow-search outline-none transition-colors duration-150 placeholder:text-placeholder-search focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown-900",
-          variant === "outlined" && "border-2 border-brown-900"
+          "h-11 w-full rounded-full border-2 border-brown-900 bg-surface-input pr-4 pl-14 text-lg leading-none text-ink shadow-search outline-none transition-colors duration-150 placeholder:text-placeholder-search focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown-900 md:h-[60px] md:rounded-search md:border-0 md:pl-[68px] md:text-[20px]",
+          variant === "outlined" && "md:border-2 md:border-brown-900"
         )}
       />
     </form>

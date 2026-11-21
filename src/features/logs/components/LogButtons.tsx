@@ -66,7 +66,7 @@ export function LogButtons({
 
   return (
     <div className="min-w-0">
-      <div className="flex flex-row flex-wrap gap-3 md:flex-col md:gap-8">
+      <div className="grid grid-cols-2 gap-x-8 gap-y-6 md:flex md:flex-col md:gap-8">
         {STATUSES.map((status) => {
           const Icon = status.icon;
           const active = current === status.value;
@@ -79,7 +79,7 @@ export function LogButtons({
               onClick={() => setStatus(status.value)}
               disabled={pending !== null}
               aria-pressed={active}
-              className={`h-[38px] w-[146px] justify-start gap-2 text-[18px] leading-none [&_svg]:size-5 ${
+              className={`h-[38px] w-full justify-start gap-2 text-[18px] leading-none md:w-[146px] [&_svg]:size-5 ${
                 active ? "bg-brown-500-active hover:bg-brown-500-active" : ""
               }`}
             >

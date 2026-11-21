@@ -2,7 +2,7 @@
 
 Web review game tempat gamer menulis ulasan, memberi rating, dan mencatat backlog game yang ingin, sedang, atau sudah dimainkan.
 
-> Demo: _tambahkan tautan Vercel setelah deploy_
+> Demo: https://gimilog.vercel.app
 
 ## Daftar Isi
 
